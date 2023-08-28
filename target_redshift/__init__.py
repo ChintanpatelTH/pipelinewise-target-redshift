@@ -227,12 +227,32 @@ def persist_lines(config, lines, table_cache=None) -> None:
                     "Line is missing required key 'stream': {}".format(line)
                 )
 
+            previous_stream = stream
+
             stream = o["stream"]
 
             schemas[stream] = float_to_decimal(o["schema"])
             validators[stream] = Draft7Validator(
                 schemas[stream], format_checker=FormatChecker()
             )
+
+            # Flush previous stream data
+            if (
+                config.get("stream_early_flush", False)
+                and row_count.get(previous_stream, 0) > 0
+            ):
+                flushed_state = flush_streams(
+                    records_to_load,
+                    row_count,
+                    stream_to_sync,
+                    config,
+                    state,
+                    flushed_state,
+                    filter_streams=[previous_stream],
+                )
+
+                # emit latest encountered state
+                emit_state(flushed_state)
 
             # flush records from previous stream SCHEMA
             # if same stream has been encountered again, it means the schema might have been altered
