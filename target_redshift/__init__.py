@@ -126,6 +126,7 @@ def load_table_cache(config):
 def persist_lines(config, lines, table_cache=None) -> None:
     state = None
     flushed_state = None
+    stream = None
     schemas = {}
     key_properties = {}
     validators = {}
