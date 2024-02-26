@@ -86,7 +86,7 @@ def column_trans(schema_property):
 
 
 def safe_column_name(name):
-    return '"{}"'.format(name).upper()
+    return '"{}"'.format(name).lower()
 
 
 def column_clause(name, schema_property):
@@ -404,9 +404,9 @@ class DbSync:
             rs_table_name = "stg_{}".format(rs_table_name)
 
         if without_schema:
-            return f'"{rs_table_name.upper()}"'
+            return f'"{rs_table_name.lower()}"'
 
-        return f'{self.schema_name}."{rs_table_name.upper()}"'
+        return f'{self.schema_name}."{rs_table_name.lower()}"'
 
     def record_primary_key_string(self, record):
         if len(self.stream_schema_message["key_properties"]) == 0:
@@ -805,7 +805,7 @@ class DbSync:
             columns = list(
                 filter(
                     lambda x: x["table_schema"] == self.schema_name.lower()
-                    and f'"{x["table_name"].upper()}"' == table_name,
+                    and f'"{x["table_name"].lower()}"' == table_name,
                     self.table_cache,
                 )
             )
@@ -904,7 +904,7 @@ class DbSync:
             found_tables = list(
                 filter(
                     lambda x: x["table_schema"] == self.schema_name.lower()
-                    and f'"{x["table_name"].upper()}"' == table_name,
+                    and f'"{x["table_name"].lower()}"' == table_name,
                     self.table_cache,
                 )
             )
@@ -912,7 +912,7 @@ class DbSync:
             found_tables = [
                 table
                 for table in (self.get_tables(self.schema_name.lower()))
-                if f'"{table["table_name"].upper()}"' == table_name
+                if f'"{table["table_name"].lower()}"' == table_name
             ]
 
         # Create target table if not exists
