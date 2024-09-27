@@ -265,13 +265,13 @@ class DbSync:
         )
         aws_access_key_id = self.connection_config.get(
             "aws_access_key_id"
-        ) or os.environ.get("AWS_ACCESS_KEY_ID")
+        )
         aws_secret_access_key = self.connection_config.get(
             "aws_secret_access_key"
-        ) or os.environ.get("AWS_SECRET_ACCESS_KEY")
+        )
         aws_session_token = self.connection_config.get(
             "aws_session_token"
-        ) or os.environ.get("AWS_SESSION_TOKEN")
+        )
 
         # Init S3 client
         # Conditionally pass keys as this seems to affect whether instance credentials are correctly loaded if the keys are None
@@ -287,8 +287,10 @@ class DbSync:
             self.connection_config["aws_access_key_id"] = credentials.access_key
             self.connection_config["aws_secret_access_key"] = credentials.secret_key
             self.connection_config["aws_session_token"] = credentials.token
-        else:
+        elif aws_profile:
             aws_session = boto3.session.Session(profile_name=aws_profile)
+        else:
+            aws_session = boto3.session.Session()
 
         self.s3 = aws_session.client("s3")
         self.skip_updates = self.connection_config.get("skip_updates", False)
